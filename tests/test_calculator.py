@@ -7,14 +7,24 @@ def _fresh_calculator(tmp_path, extra_env=None):
     Fresh Calculator bound to per-test tmp dirs.
     Returns (calculator, cfg).
     """
+    # Point to isolated per-test dirs
     os.environ["CALCULATOR_HISTORY_DIR"] = str(tmp_path / "history")
     os.environ["CALCULATOR_LOG_DIR"] = str(tmp_path / "logs")
     if extra_env:
         for k, v in extra_env.items():
             os.environ[k] = str(v)
 
+    # Reload config first
     import app.calculator_config as cc
     reload(cc)
+
+    # CRITICAL: reload modules that may read cfg/HISTORY_DIR at import time
+    import app.history as hist
+    reload(hist)
+    import app.logger as log
+    reload(log)
+    import app.operations as ops
+    reload(ops)
     import app.input_validators as iv
     reload(iv)
     import app.calculator as calc_mod
