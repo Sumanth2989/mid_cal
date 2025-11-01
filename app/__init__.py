@@ -1,1 +1,2 @@
-# Empty on purpose. # pragma: no cover
+"""Calculator package."""
+# Keep this file side-effect free.

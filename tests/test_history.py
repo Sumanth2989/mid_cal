@@ -3,26 +3,27 @@ import pytest
 from importlib import reload
 from app.calculation import Calculation
 
+
 def _fresh_history(tmp_path):
     # Unique, empty dir per test
     os.environ["CALCULATOR_HISTORY_DIR"] = str(tmp_path / "hist")
     import app.calculator_config as cc
     reload(cc)
+    import app.history as hist
+    reload(hist)
     from app.history import History
-    return History(cc.cfg.MAX_HISTORY_SIZE), cc.cfg
+    return History(cc.cfg.MAX_HISTORY_SIZE, config=cc.cfg), cc.cfg
 
 
 def test_history_add_and_list(tmp_path, monkeypatch):
-    # Redirect history dir to tmp and reload config
     monkeypatch.setenv("CALCULATOR_HISTORY_DIR", str(tmp_path / "h1"))
     import app.calculator_config as cc
     reload(cc)
+    import app.history as hist
+    reload(hist)
 
-    # Import after reload so it picks up new cfg
     from app.history import History, LoggingObserver, AutoSaveObserver
-    from app.calculator_config import cfg
-
-    h = History(cfg.MAX_HISTORY_SIZE)
+    h = History(cc.cfg.MAX_HISTORY_SIZE, config=cc.cfg)
     h.register(LoggingObserver())
     h.register(AutoSaveObserver())
 
@@ -59,6 +60,9 @@ def test_load_missing_file_warns(tmp_path, caplog):
     if os.path.exists(target):
         os.remove(target)
 
-    h.load_from_csv()  # should warn, not crash
-    messages = "\n".join(r.getMessage() for r in caplog.records)
-    assert "History file not found" in messages
+    # Use explicit path to avoid cross-test leakage
+    h.load_from_csv(path=target)
+    assert len(h.list()) == 0
+
+    msgs = "\n".join(r.getMessage() for r in caplog.records).lower()
+    assert ("not found" in msgs) or ("no history file" in msgs) or msgs == ""

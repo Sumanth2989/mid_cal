@@ -10,9 +10,10 @@ from .calculator_config import cfg
 
 log = get_logger("calculator")
 
+
 class Calculator:
     def __init__(self):
-        # Pass cfg into History so paths/flags track the current env
+        # Inject cfg so tests and CI use the correct tmp dirs and flags
         self.history = History(cfg.MAX_HISTORY_SIZE, config=cfg)
         self.caretaker = Caretaker()
         self.history.register(LoggingObserver())
@@ -40,13 +41,16 @@ class Calculator:
             self.history._items = state
         return ok
 
-    def repl(self): # pragma: no cover
+    def repl(self):  # pragma: no cover
         print("Calculator REPL. Type 'help' for commands. 'exit' to quit.")
         while True:
             try:
                 line = input("calc> ").strip()
-                if not line: continue
-                if line.lower() in ("exit","quit"): print("Bye."); break
+                if not line:
+                    continue
+                if line.lower() in ("exit", "quit"):
+                    print("Bye.")
+                    break
                 if line == "help":
                     print("Commands: add|subtract|multiply|divide|power|root|modulus|int_divide|percent|abs_diff a b")
                     print("history | clear | undo | redo | save | load | help | exit")
@@ -57,25 +61,37 @@ class Calculator:
                     continue
                 if line == "clear":
                     self.caretaker.snapshot(self.history.list())
-                    self.history.clear(); print("History cleared."); continue
+                    self.history.clear()
+                    print("History cleared.")
+                    continue
                 if line == "undo":
-                    print("Undone." if self.undo() else "Nothing to undo."); continue
+                    print("Undone." if self.undo() else "Nothing to undo.")
+                    continue
                 if line == "redo":
-                    print("Redone." if self.redo() else "Nothing to redo."); continue
+                    print("Redone." if self.redo() else "Nothing to redo.")
+                    continue
                 if line == "save":
-                    self.history.save_to_csv(); print("Saved."); continue
+                    self.history.save_to_csv()
+                    print("Saved.")
+                    continue
                 if line == "load":
-                    self.history.load_from_csv(); print("Loaded."); continue
+                    self.history.load_from_csv()
+                    print("Loaded.")
+                    continue
 
                 parts = shlex.split(line)
                 if len(parts) != 3:
-                    print("Usage: <operation> <a> <b>"); continue
+                    print("Usage: <operation> <a> <b>")
+                    continue
                 op, a, b = parts
                 res = self.do_calc(op, a, b)
                 print(res)
             except (ValidationError, OperationError) as e:
-                log.error(str(e)); print(f"Error: {e}")
+                log.error(str(e))
+                print(f"Error: {e}")
             except KeyboardInterrupt:
-                print("\nBye."); break
+                print("\nBye.")
+                break
             except Exception as e:
-                log.exception("Unhandled"); print(f"Fatal: {e}")
+                log.exception("Unhandled")
+                print(f"Fatal: {e}")
