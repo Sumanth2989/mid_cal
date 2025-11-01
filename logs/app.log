@@ -1,0 +1,12 @@
+2025-10-31 13:39:06,790 INFO history: CALC: add(2.0, 3.0) = 5.0
+2025-10-31 13:39:06,793 INFO history: History saved to history/history.csv
+2025-10-31 13:39:06,795 INFO history: CALC: add(999.0, 1.0) = 1000.0
+2025-10-31 13:39:06,796 INFO history: History saved to history/history.csv
+2025-10-31 13:39:06,820 INFO history: CALC: add(1, 2) = 3
+2025-10-31 13:39:06,821 INFO history: History saved to history/history.csv
+2025-10-31 13:41:32,700 INFO history: CALC: add(3.0, 4.0) = 7.0
+2025-10-31 13:41:32,708 INFO history: History saved to history/history.csv
+2025-10-31 13:44:37,169 INFO history: CALC: add(2.0, 3.0) = 5.0
+2025-10-31 13:44:37,172 INFO history: History saved to history/history.csv
+2025-10-31 13:44:37,178 INFO history: CALC: add(1, 2) = 3
+2025-10-31 13:44:37,179 INFO history: History saved to history/history.csv
