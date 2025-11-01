@@ -12,7 +12,8 @@ log = get_logger("calculator")
 
 class Calculator:
     def __init__(self):
-        self.history = History(cfg.MAX_HISTORY_SIZE)
+        # Pass cfg into History so paths/flags track the current env
+        self.history = History(cfg.MAX_HISTORY_SIZE, config=cfg)
         self.caretaker = Caretaker()
         self.history.register(LoggingObserver())
         self.history.register(AutoSaveObserver())
